@@ -73,6 +73,8 @@
             overflow: hidden;
             position: relative;
             cursor: grab;
+            -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
+            scroll-behavior: smooth; /* Para un desplazamiento suave en navegadores modernos */
         }
         
         .gallery-track {
@@ -307,7 +309,17 @@
             animation: spin 1s ease-in-out infinite;
             z-index: 1001;
         }
-        
+        .gallery-track {
+    /* Asegurar que el track sea táctilmente responsive */
+    touch-action: pan-y; /* Permitir desplazamiento vertical pero no zoom */
+}
+
+.gallery-item {
+    /* Mejorar la respuesta táctil */
+    -webkit-tap-highlight-color: transparent; /* Eliminar el highlight azul al tocar en iOS */
+    -webkit-touch-callout: none; /* Evitar el menú contextual en iOS */
+}
+
         @keyframes spin {
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
@@ -456,7 +468,7 @@
     <!-- ITEM 1 -->
     <div class="item" id="item1">
         <div class="hero">
-            <img src="imagen/ima1.jpg" alt="Imagen principal ITEM 1" class="hero-image">
+            <img src="imagen/ima1.jpg" alt="Imagen principal ITEM 1" class="hero-image hero-clickable">
         </div>
         
         <section class="gallery-section">
@@ -464,10 +476,10 @@
                 <div class="gallery-track" id="galleryTrack1">
                     <!-- 16 imágenes del carrusel ITEM 1 -->
                     <div class="gallery-item">
-                        <img src="imagen/Im1.jpg" alt="ITEM 1 - Imagen A" class="gallery-img" data-index="0">
+                        <img src="imagen/Im8.jpg" alt="ITEM 1 - Imagen A" class="gallery-img" data-index="0">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/Im2.jpg" alt="ITEM 1 - Imagen B" class="gallery-img" data-index="1">
+                        <img src="imagen/Im13.jpg" alt="ITEM 1 - Imagen B" class="gallery-img" data-index="1">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/Im3.jpg" alt="ITEM 1 - Imagen C" class="gallery-img" data-index="2">
@@ -476,7 +488,7 @@
                         <img src="imagen/Im4.jpg" alt="ITEM 1 - Imagen D" class="gallery-img" data-index="3">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/Im5.jpg" alt="ITEM 1 - Imagen E" class="gallery-img" data-index="4">
+                        <img src="imagen/im16.jpg" alt="ITEM 1 - Imagen E" class="gallery-img" data-index="4">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/Im6.jpg" alt="ITEM 1 - Imagen F" class="gallery-img" data-index="5">
@@ -485,7 +497,7 @@
                         <img src="imagen/Im7.jpg" alt="ITEM 1 - Imagen G" class="gallery-img" data-index="6">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/Im8.jpg" alt="ITEM 1 - Imagen H" class="gallery-img" data-index="7">
+                        <img src="imagen/Im1.jpg" alt="ITEM 1 - Imagen H" class="gallery-img" data-index="7">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/Im9.jpg" alt="ITEM 1 - Imagen I" class="gallery-img" data-index="8">
@@ -500,7 +512,7 @@
                         <img src="imagen/Im12.jpg" alt="ITEM 1 - Imagen L" class="gallery-img" data-index="11">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/Im13.jpg" alt="ITEM 1 - Imagen M" class="gallery-img" data-index="12">
+                        <img src="imagen/Im2.jpg" alt="ITEM 1 - Imagen M" class="gallery-img" data-index="12">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/Im14.jpg" alt="ITEM 1 - Imagen N" class="gallery-img" data-index="13">
@@ -509,7 +521,7 @@
                         <img src="imagen/Im15.jpg" alt="ITEM 1 - Imagen O" class="gallery-img" data-index="14">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/im16.jpg" alt="ITEM 1 - Imagen P" class="gallery-img" data-index="15">
+                        <img src="imagen/Im5.jpg" alt="ITEM 1 - Imagen P" class="gallery-img" data-index="15">
                     </div>
                     
                     <!-- Duplicado de las primeras 6 imágenes para efecto infinito -->
@@ -565,7 +577,7 @@
     <!-- ITEM 2 -->
     <div class="item" id="item2">
         <div class="hero">
-            <img src="imagen/Rma1.jpg" alt="Imagen principal ITEM 2" class="hero-image">
+            <img src="imagen/Rma1.jpg" alt="Imagen principal ITEM 1" class="hero-image hero-clickable">
         </div>
         
         <section class="gallery-section">
@@ -579,10 +591,10 @@
                         <img src="imagen/r2.jpg" alt="ITEM 2 - Imagen B" class="gallery-img" data-index="1">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/r3.jpg" alt="ITEM 2 - Imagen C" class="gallery-img" data-index="2">
+                        <img src="imagen/r4.jpg" alt="ITEM 2 - Imagen C" class="gallery-img" data-index="2">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/r4.jpg" alt="ITEM 2 - Imagen D" class="gallery-img" data-index="3">
+                        <img src="imagen/r7.jpg" alt="ITEM 2 - Imagen D" class="gallery-img" data-index="3">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/r5.jpg" alt="ITEM 2 - Imagen E" class="gallery-img" data-index="4">
@@ -591,7 +603,7 @@
                         <img src="imagen/r6.jpg" alt="ITEM 2 - Imagen F" class="gallery-img" data-index="5">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/r7.jpg" alt="ITEM 2 - Imagen G" class="gallery-img" data-index="6">
+                        <img src="imagen/r3.jpg" alt="ITEM 2 - Imagen G" class="gallery-img" data-index="6">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/r8.jpg" alt="ITEM 2 - Imagen H" class="gallery-img" data-index="7">
@@ -674,7 +686,7 @@
     <!-- ITEM 3 -->
     <div class="item" id="item3">
         <div class="hero">
-            <img src="imagen/Pm1.jpg" alt="Imagen principal ITEM 3" class="hero-image">
+            <img src="imagen/Pm1.jpg" alt="Imagen principal ITEM 1" class="hero-image hero-clickable">
         </div>
         
         <section class="gallery-section">
@@ -783,7 +795,7 @@
     <!-- ITEM 4 -->
     <div class="item" id="item4">
         <div class="hero">
-            <img src="imagen/Lma2.jpg" alt="Imagen principal ITEM 4" class="hero-image">
+            <img src="imagen/Lma2.jpg" alt="Imagen principal ITEM 1" class="hero-image hero-clickable">
         </div>
         
         <section class="gallery-section">
@@ -791,13 +803,13 @@
                 <div class="gallery-track" id="galleryTrack4">
                     <!-- 16 imágenes del carrusel ITEM 4 -->
                     <div class="gallery-item">
-                        <img src="imagen/l1.jpg" alt="ITEM 4 - Imagen A" class="gallery-img" data-index="0">
+                        <img src="imagen/l15.jpg" alt="ITEM 4 - Imagen A" class="gallery-img" data-index="0">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/l2.jpg" alt="ITEM 4 - Imagen B" class="gallery-img" data-index="1">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/l3.jpg" alt="ITEM 4 - Imagen C" class="gallery-img" data-index="2">
+                        <img src="imagen/l9.jpg" alt="ITEM 4 - Imagen C" class="gallery-img" data-index="2">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/l4.jpg" alt="ITEM 4 - Imagen D" class="gallery-img" data-index="3">
@@ -815,7 +827,7 @@
                         <img src="imagen/l8.jpg" alt="ITEM 4 - Imagen H" class="gallery-img" data-index="7">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/l9.jpg" alt="ITEM 4 - Imagen I" class="gallery-img" data-index="8">
+                        <img src="imagen/l1.jpg" alt="ITEM 4 - Imagen I" class="gallery-img" data-index="8">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/l10.jpg" alt="ITEM 4 - Imagen J" class="gallery-img" data-index="9">
@@ -833,7 +845,7 @@
                         <img src="imagen/l14.jpg" alt="ITEM 4 - Imagen N" class="gallery-img" data-index="13">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/l15.jpg" alt="ITEM 4 - Imagen O" class="gallery-img" data-index="14">
+                        <img src="imagen/l3.jpg" alt="ITEM 4 - Imagen O" class="gallery-img" data-index="14">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/l16.jpg" alt="ITEM 4 - Imagen P" class="gallery-img" data-index="15">
@@ -892,7 +904,7 @@
     <!-- ITEM 5 -->
     <div class="item" id="item5">
         <div class="hero">
-            <img src="imagen/Tm1.jpg" alt="Imagen principal ITEM 5" class="hero-image">
+            <img src="imagen/Tm1.jpg" alt="Imagen principal ITEM 1" class="hero-image hero-clickable">
         </div>
         
         <section class="gallery-section">
@@ -1002,7 +1014,7 @@
     <div class="item" id="item6">
 
         <div class="hero">
-            <img src="imagen/zm1.jpg" alt="Imagen principal ITEM 6" class="hero-image">
+            <img src="imagen/zm1.jpg" alt="Imagen principal ITEM 1" class="hero-image hero-clickable">
         </div>
         
         <section class="gallery-section">
@@ -1013,10 +1025,10 @@
                         <img src="imagen/z1.jpg" alt="ITEM 6 - Imagen A" class="gallery-img" data-index="0">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/z2.jpg" alt="ITEM 6 - Imagen B" class="gallery-img" data-index="1">
+                        <img src="imagen/z3.jpg" alt="ITEM 6 - Imagen B" class="gallery-img" data-index="1">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/z3.jpg" alt="ITEM 6 - Imagen C" class="gallery-img" data-index="2">
+                        <img src="imagen/z8.jpg" alt="ITEM 6 - Imagen C" class="gallery-img" data-index="2">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/z4.jpg" alt="ITEM 6 - Imagen D" class="gallery-img" data-index="3">
@@ -1031,7 +1043,7 @@
                         <img src="imagen/z7.jpg" alt="ITEM 6 - Imagen G" class="gallery-img" data-index="6">
                     </div>
                     <div class="gallery-item">
-                        <img src="imagen/z8.jpg" alt="ITEM 6 - Imagen H" class="gallery-img" data-index="7">
+                        <img src="imagen/z2.jpg" alt="ITEM 6 - Imagen H" class="gallery-img" data-index="7">
                     </div>
                     <div class="gallery-item">
                         <img src="imagen/z9.jpg" alt="ITEM 6 - Imagen I" class="gallery-img" data-index="8">
@@ -1147,6 +1159,23 @@
             let lightboxIndex = 0;
             let currentGalleryImages = [];
             
+            // Agregar evento de clic a las imágenes principales
+            const heroImages = document.querySelectorAll('.hero-clickable');
+            heroImages.forEach(heroImage => {
+            heroImage.addEventListener('click', function() {
+            // Crear un array temporal con solo esta imagen
+            currentGalleryImages = [this];
+            lightboxIndex = 0;
+            openLightbox(lightboxIndex);
+        
+            // Ocultar controles de navegación ya que solo hay una imagen
+            lightboxPrev.style.display = 'none';
+            lightboxNext.style.display = 'none';
+            imageCounter.style.display = 'none';
+            });
+            });
+
+
             // Función para inicializar cada galería
             function initGallery(galleryNumber) {
                 const track = document.getElementById(`galleryTrack${galleryNumber}`);
@@ -1273,25 +1302,40 @@
                 });
                 
                 // Eventos para dispositivos táctiles
-                container.addEventListener('touchstart', (e) => {
-                    if (isAnimating) return;
-                    isDown = true;
-                    startX = e.touches[0].pageX - container.offsetLeft;
-                    scrollLeft = track.scrollLeft;
-                }, { passive: true });
-                
-                container.addEventListener('touchend', () => {
-                    if (!isDown) return;
-                    isDown = false;
-                    checkPosition();
-                });
-                
-                container.addEventListener('touchmove', (e) => {
-                    if(!isDown || isAnimating) return;
-                    const x = e.touches[0].pageX - container.offsetLeft;
-                    const walk = (x - startX) * 2;
-                    track.scrollLeft = scrollLeft - walk;
-                }, { passive: true });
+               container.addEventListener('touchstart', (e) => {
+    if (isAnimating) return;
+    isDown = true;
+    startX = e.touches[0].pageX - container.offsetLeft;
+    scrollLeft = track.scrollLeft;
+    // No prevenir el comportamiento por defecto para permitir desplazamiento natural
+}, { passive: true });
+
+container.addEventListener('touchend', () => {
+    if (!isDown) return;
+    isDown = false;
+    
+    // Determinar si fue un deslizamiento rápido para cambiar de slide
+    const movedDistance = Math.abs(track.scrollLeft - scrollLeft);
+    if (movedDistance > itemWidth / 3) {
+        if (track.scrollLeft > scrollLeft) {
+            navigate(-1);
+        } else {
+            navigate(1);
+        }
+    } else {
+        // Si no se deslizó lo suficiente, volver al slide actual
+        goToSlide(currentIndex);
+    }
+});
+
+container.addEventListener('touchmove', (e) => {
+    if(!isDown || isAnimating) return;
+    const x = e.touches[0].pageX - container.offsetLeft;
+    const walk = (x - startX) * 2;
+    
+    // Usar transform para un desplazamiento más suave
+    track.style.transform = `translateX(${-currentIndex * itemWidth - walk}px)`;
+}, { passive: true });
                 
                 // Verificar la posición después de arrastrar
                 function checkPosition() {
@@ -1415,9 +1459,14 @@
             }
             
             function closeLightbox() {
-                lightbox.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
+    lightbox.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    
+    // Restaurar controles de navegación
+    lightboxPrev.style.display = 'flex';
+    lightboxNext.style.display = 'flex';
+    imageCounter.style.display = 'block';
+}
             
             function navigateLightbox(direction) {
                 lightboxIndex += direction;
