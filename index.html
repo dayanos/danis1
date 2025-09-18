@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>6 ITEMS - Galería Completa</title>
     <style>
         * {
@@ -74,6 +74,7 @@
             position: relative;
             cursor: grab;
             -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
+            scroll-snap-type: x mandatory; /* Mejorar el ajuste al soltar */
             scroll-behavior: smooth; /* Para un desplazamiento suave en navegadores modernos */
         }
         
@@ -81,6 +82,7 @@
             display: flex;
             will-change: transform;
             transition: transform 0.5s ease;
+            scroll-snap-type: x mandatory;
         }
         
         .gallery-item {
@@ -92,8 +94,22 @@
             cursor: pointer;
             position: relative;
             margin: 0 8px;
+            scroll-snap-align: start; /* Hacer que cada item se ajuste al centro */
         }
         
+        /* Mejorar el feedback visual durante el desplazamiento */
+.gallery-container.grabbing {
+    cursor: grabbing;
+    cursor: -webkit-grabbing;
+}
+
+/* Prevenir selección de texto durante el desplazamiento */
+.gallery-container {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
         .gallery-img {
             width: 100%;
             height: 100%;
@@ -1301,33 +1317,69 @@
                     track.scrollLeft = scrollLeft - walk;
                 });
                 
-                // Eventos para dispositivos táctiles
-               container.addEventListener('touchstart', (e) => {
+                // Variables globales para el control táctil
+let touchStartX = 0;
+let touchStartY = 0;
+let isSwiping = false;
+
+// Evento touchstart - registrar el punto de inicio
+container.addEventListener('touchstart', (e) => {
     if (isAnimating) return;
-    isDown = true;
-    startX = e.touches[0].pageX - container.offsetLeft;
-    scrollLeft = track.scrollLeft;
-    // No prevenir el comportamiento por defecto para permitir desplazamiento natural
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    isSwiping = true;
+    container.classList.add('grabbing');
 }, { passive: true });
 
+// Evento touchmove - manejar el desplazamiento
+container.addEventListener('touchmove', (e) => {
+    if (!isSwiping) return;
+    
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    
+    // Calcular la distancia de desplazamiento
+    const diffX = touchX - touchStartX;
+    const diffY = touchY - touchStartY;
+    
+    // Solo procesar si el movimiento es principalmente horizontal
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 5) {
+        e.preventDefault(); // Prevenir scroll vertical no deseado
+        
+        // Calcular el nuevo desplazamiento
+        const newScrollLeft = scrollLeft - diffX * 1.5;
+        
+        // Limitar el desplazamiento para evitar espacios vacíos
+        const maxScroll = track.scrollWidth - container.offsetWidth;
+        const boundedScroll = Math.max(0, Math.min(maxScroll, newScrollLeft));
+        
+        track.scrollLeft = boundedScroll;
+        touchStartX = touchX; // Actualizar la posición de inicio
+    }
+}, { passive: false }); // Cambiado a passive: false para poder usar preventDefault
+
+// Evento touchend - finalizar el desplazamiento
 container.addEventListener('touchend', () => {
-    if (!isDown) return;
-    isDown = false;
+    if (!isSwiping) return;
+    isSwiping = false;
+    container.classList.remove('grabbing');
+    
+    // Calcular la velocidad y dirección del deslizamiento
+    const currentScroll = track.scrollLeft;
+    const movedDistance = Math.abs(currentScroll - scrollLeft);
     
     // Determinar si fue un deslizamiento rápido para cambiar de slide
-    const movedDistance = Math.abs(track.scrollLeft - scrollLeft);
     if (movedDistance > itemWidth / 3) {
-        if (track.scrollLeft > scrollLeft) {
-            navigate(-1);
+        if (currentScroll > scrollLeft) {
+            navigate(-1); // Deslizamiento hacia la izquierda
         } else {
-            navigate(1);
+            navigate(1); // Deslizamiento hacia la derecha
         }
     } else {
         // Si no se deslizó lo suficiente, volver al slide actual
         goToSlide(currentIndex);
     }
 });
-
 container.addEventListener('touchmove', (e) => {
     if(!isDown || isAnimating) return;
     const x = e.touches[0].pageX - container.offsetLeft;
