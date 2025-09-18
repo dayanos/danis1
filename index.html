@@ -36,8 +36,7 @@
         /* Estilos para PC y pantallas grandes */
         .hero {
             width: 100%;
-        /* La altura se adapta a la imagen, no al 100vh */
-             height: auto; 
+            height: auto; 
             overflow: hidden;
             position: relative;
         }
@@ -46,19 +45,20 @@
             width: 100%;
             height: auto;
             display: block;
-            object-fit: cover; /* Permite que la imagen cubra todo el espacio sin dejar barras */
+            object-fit: cover;
             object-position: center;
+            cursor: pointer;
         }
 
         /* Estilos para móviles y pantallas pequeñas */
         @media screen and (max-width: 768px) {
-        .hero {
-            height: auto; /* La altura del contenedor se adapta al contenido */
+            .hero {
+                height: auto;
             }
-        .hero-image {
-            max-height: 80vh; /* La imagen no es demasiado alta */
-            object-fit: contain; /* La imagen se ve completa, sin recortes */
-        }
+            .hero-image {
+                max-height: 80vh;
+                object-fit: contain;
+            }
         }
         
         .gallery-section {
@@ -73,16 +73,13 @@
             overflow: hidden;
             position: relative;
             cursor: grab;
-            -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
-            scroll-snap-type: x mandatory; /* Mejorar el ajuste al soltar */
-            scroll-behavior: smooth; /* Para un desplazamiento suave en navegadores modernos */
+            -webkit-overflow-scrolling: touch;
         }
         
         .gallery-track {
             display: flex;
             will-change: transform;
             transition: transform 0.5s ease;
-            scroll-snap-type: x mandatory;
         }
         
         .gallery-item {
@@ -94,22 +91,8 @@
             cursor: pointer;
             position: relative;
             margin: 0 8px;
-            scroll-snap-align: start; /* Hacer que cada item se ajuste al centro */
         }
 
-        /* Mejorar el feedback visual durante el desplazamiento */
-.gallery-container.grabbing {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-}
-
-/* Prevenir selección de texto durante el desplazamiento */
-.gallery-container {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
         .gallery-img {
             width: 100%;
             height: 100%;
@@ -325,17 +308,7 @@
             animation: spin 1s ease-in-out infinite;
             z-index: 1001;
         }
-        .gallery-track {
-    /* Asegurar que el track sea táctilmente responsive */
-    touch-action: pan-y; /* Permitir desplazamiento vertical pero no zoom */
-}
-
-.gallery-item {
-    /* Mejorar la respuesta táctil */
-    -webkit-tap-highlight-color: transparent; /* Eliminar el highlight azul al tocar en iOS */
-    -webkit-touch-callout: none; /* Evitar el menú contextual en iOS */
-}
-
+        
         @keyframes spin {
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
@@ -1178,19 +1151,18 @@
             // Agregar evento de clic a las imágenes principales
             const heroImages = document.querySelectorAll('.hero-clickable');
             heroImages.forEach(heroImage => {
-            heroImage.addEventListener('click', function() {
-            // Crear un array temporal con solo esta imagen
-            currentGalleryImages = [this];
-            lightboxIndex = 0;
-            openLightbox(lightboxIndex);
-        
-            // Ocultar controles de navegación ya que solo hay una imagen
-            lightboxPrev.style.display = 'none';
-            lightboxNext.style.display = 'none';
-            imageCounter.style.display = 'none';
+                heroImage.addEventListener('click', function() {
+                    // Crear un array temporal con solo esta imagen
+                    currentGalleryImages = [this];
+                    lightboxIndex = 0;
+                    openLightbox(lightboxIndex);
+                    
+                    // Ocultar controles de navegación ya que solo hay una imagen
+                    lightboxPrev.style.display = 'none';
+                    lightboxNext.style.display = 'none';
+                    imageCounter.style.display = 'none';
+                });
             });
-            });
-
 
             // Función para inicializar cada galería
             function initGallery(galleryNumber) {
@@ -1317,82 +1289,51 @@
                     track.scrollLeft = scrollLeft - walk;
                 });
                 
-                // Variables globales para el control táctil
-let touchStartX = 0;
-let touchStartY = 0;
-let isSwiping = false;
-
-// Evento touchstart - registrar el punto de inicio
-container.addEventListener('touchstart', (e) => {
-    if (isAnimating) return;
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-    isSwiping = true;
-    container.classList.add('grabbing');
-}, { passive: true });
-
-// Evento touchmove - manejar el desplazamiento
-container.addEventListener('touchmove', (e) => {
-    if (!isSwiping) return;
-    
-    const touchX = e.touches[0].clientX;
-    const touchY = e.touches[0].clientY;
-    
-    // Calcular la distancia de desplazamiento
-    const diffX = touchX - touchStartX;
-    const diffY = touchY - touchStartY;
-    
-    // Solo procesar si el movimiento es principalmente horizontal
-    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 5) {
-        e.preventDefault(); // Prevenir scroll vertical no deseado
-        
-        // Calcular el nuevo desplazamiento
-        const newScrollLeft = scrollLeft - diffX * 1.5;
-        
-        // Limitar el desplazamiento para evitar espacios vacíos
-        const maxScroll = track.scrollWidth - container.offsetWidth;
-        const boundedScroll = Math.max(0, Math.min(maxScroll, newScrollLeft));
-        
-        track.scrollLeft = boundedScroll;
-        touchStartX = touchX; // Actualizar la posición de inicio
-    }
-}, { passive: false }); // Cambiado a passive: false para poder usar preventDefault
-
-// Evento touchend - finalizar el desplazamiento
-container.addEventListener('touchend', () => {
-    if (!isSwiping) return;
-    isSwiping = false;
-    container.classList.remove('grabbing');
-    
-    // Calcular la velocidad y dirección del deslizamiento
-    const currentScroll = track.scrollLeft;
-    const movedDistance = Math.abs(currentScroll - scrollLeft);
-    
-    // Determinar si fue un deslizamiento rápido para cambiar de slide
-    if (movedDistance > itemWidth / 3) {
-        if (currentScroll > scrollLeft) {
-            navigate(-1); // Deslizamiento hacia la izquierda
-        } else {
-            navigate(1); // Deslizamiento hacia la derecha
-        }
-    } else {
-        // Si no se deslizó lo suficiente, volver al slide actual
-        goToSlide(currentIndex);
-    }
-});
-container.addEventListener('touchmove', (e) => {
-    if(!isDown || isAnimating) return;
-    const x = e.touches[0].pageX - container.offsetLeft;
-    const walk = (x - startX) * 2;
-    
-    // Usar transform para un desplazamiento más suave
-    track.style.transform = `translateX(${-currentIndex * itemWidth - walk}px)`;
-}, { passive: true });
+                // Eventos para desplazamiento táctil
+                let touchStartX = 0;
+                let touchStartScrollLeft = 0;
+                let isSwiping = false;
+                
+                container.addEventListener('touchstart', (e) => {
+                    if (isAnimating) return;
+                    touchStartX = e.touches[0].clientX;
+                    touchStartScrollLeft = track.scrollLeft;
+                    isSwiping = true;
+                    container.classList.add('grabbing');
+                }, { passive: true });
+                
+                container.addEventListener('touchmove', (e) => {
+                    if (!isSwiping || isAnimating) return;
+                    
+                    const touchX = e.touches[0].clientX;
+                    const diffX = touchX - touchStartX;
+                    
+                    // Actualizar el desplazamiento
+                    track.scrollLeft = touchStartScrollLeft - diffX;
+                }, { passive: true });
+                
+                container.addEventListener('touchend', () => {
+                    if (!isSwiping) return;
+                    isSwiping = false;
+                    container.classList.remove('grabbing');
+                    
+                    // Determinar si fue un deslizamiento para cambiar de slide
+                    const movedDistance = Math.abs(track.scrollLeft - touchStartScrollLeft);
+                    if (movedDistance > itemWidth / 3) {
+                        if (track.scrollLeft > touchStartScrollLeft) {
+                            navigate(-1); // Deslizamiento hacia la izquierda
+                        } else {
+                            navigate(1); // Deslizamiento hacia la derecha
+                        }
+                    } else {
+                        // Si no se deslizó lo suficiente, volver al slide actual
+                        goToSlide(currentIndex);
+                    }
+                });
                 
                 // Verificar la posición después de arrastrar
                 function checkPosition() {
                     const currentScroll = track.scrollLeft;
-                    const maxScroll = track.scrollWidth - container.offsetWidth;
                     
                     // Calcular el índice actual basado en el desplazamiento
                     let newIndex = Math.round(currentScroll / itemWidth);
@@ -1421,6 +1362,11 @@ container.addEventListener('touchmove', (e) => {
                             // Obtener solo las imágenes originales (no los clones)
                             currentGalleryImages = Array.from(galleryImages).slice(0, totalOriginalItems);
                             openLightbox(lightboxIndex);
+                            
+                            // Mostrar controles de navegación
+                            lightboxPrev.style.display = 'flex';
+                            lightboxNext.style.display = 'flex';
+                            imageCounter.style.display = 'block';
                         });
                     }
                 });
@@ -1504,21 +1450,18 @@ container.addEventListener('touchmove', (e) => {
                     imageCounter.textContent = `${index + 1} / ${currentGalleryImages.length}`;
                     lightbox.classList.add('active');
                     document.body.style.overflow = 'hidden';
-                    
-                    // Ajustar la imagen para dispositivos móviles
-                    adjustImageForMobile();
                 };
             }
             
             function closeLightbox() {
-    lightbox.classList.remove('active');
-    document.body.style.overflow = 'auto';
-    
-    // Restaurar controles de navegación
-    lightboxPrev.style.display = 'flex';
-    lightboxNext.style.display = 'flex';
-    imageCounter.style.display = 'block';
-}
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                
+                // Restaurar controles de navegación
+                lightboxPrev.style.display = 'flex';
+                lightboxNext.style.display = 'flex';
+                imageCounter.style.display = 'block';
+            }
             
             function navigateLightbox(direction) {
                 lightboxIndex += direction;
@@ -1532,25 +1475,31 @@ container.addEventListener('touchmove', (e) => {
                 openLightbox(lightboxIndex);
             }
             
-            // Función para ajustar la imagen en dispositivos móviles
-            function adjustImageForMobile() {
-                // Esta función asegura que la imagen se vea correctamente en todos los dispositivos
-                setTimeout(() => {
-                    lightboxImg.style.maxWidth = '100%';
-                    lightboxImg.style.maxHeight = '90vh';
-                    lightboxImg.style.objectFit = 'contain';
-                    
-                    // Para dispositivos móviles en orientación horizontal
-                    if (window.innerHeight < window.innerWidth) {
-                        lightboxImg.style.maxHeight = '85vh';
-                    }
-                }, 50);
-            }
-            
             // Ajustar el lightbox cuando cambia la orientación del dispositivo
             window.addEventListener('resize', function() {
+                // Recalcular dimensiones de todas las galerías
+                for (let i = 1; i <= 6; i++) {
+                    const track = document.getElementById(`galleryTrack${i}`);
+                    if (track) {
+                        const galleryItems = document.querySelectorAll(`#galleryTrack${i} .gallery-item`);
+                        if (galleryItems.length > 0) {
+                            const itemWidth = galleryItems[0].offsetWidth + 16;
+                            const totalItems = galleryItems.length;
+                            track.style.width = `${totalItems * itemWidth}px`;
+                        }
+                    }
+                }
+                
                 if (lightbox.classList.contains('active')) {
-                    adjustImageForMobile();
+                    // Reajustar la imagen del lightbox si está abierto
+                    setTimeout(() => {
+                        lightboxImg.style.maxWidth = '100%';
+                        lightboxImg.style.maxHeight = '90vh';
+                        
+                        if (window.innerHeight < window.innerWidth) {
+                            lightboxImg.style.maxHeight = '85vh';
+                        }
+                    }, 50);
                 }
             });
         });
