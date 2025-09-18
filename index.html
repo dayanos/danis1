@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6 ITEMS - Galería Completa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+            background-color: #111;
+        }
+        
+        /* Estilos para cada ITEM */
+        .item {
+            margin-bottom: 0px;
+        }
+        
+        .item-title {
+            text-align: center;
+            color: white;
+            font-size: 2rem;
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        /* Estilos para PC y pantallas grandes */
+        .hero {
+            width: 100%;
+        /* La altura se adapta a la imagen, no al 100vh */
+             height: auto; 
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover; /* Permite que la imagen cubra todo el espacio sin dejar barras */
+            object-position: center;
+        }
+
+        /* Estilos para móviles y pantallas pequeñas */
+        @media screen and (max-width: 768px) {
+        .hero {
+            height: auto; /* La altura del contenedor se adapta al contenido */
+            }
+        .hero-image {
+            max-height: 80vh; /* La imagen no es demasiado alta */
+            object-fit: contain; /* La imagen se ve completa, sin recortes */
+        }
+        }
+        
+        .gallery-section {
+            width: 100%;
+            background-color: #111;
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .gallery-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            cursor: grab;
+        }
+        
+        .gallery-track {
+            display: flex;
+            will-change: transform;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item {
+            flex: 0 0 auto;
+            width: 300px;
+            height: 200px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            margin: 0 8px;
+        }
+        
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+            object-position: top;
+        }
+        
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.05);
+        }
+        
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-nav:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .nav-prev {
+            left: 15px;
+        }
+        
+        .nav-next {
+            right: 15px;
+        }
+        
+        .gallery-nav i {
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        .gallery-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 10;
+            flex-wrap: wrap;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .dot.active {
+            background-color: #fff;
+            transform: scale(1.2);
+        }
+        
+        .gallery-container.grabbing {
+            cursor: grabbing;
+        }
+        
+        .gallery-container.grabbing .gallery-item {
+            transition: none;
+        }
+        
+        /* Lightbox optimizado para todos los dispositivos */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .lightbox.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox-img-container {
+            position: relative;
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .lightbox-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            z-index: 1002;
+            transition: all 0.3s ease;
+        }
+        
+        .lightbox-close:hover {
+            background: rgba(0, 0, 0, 0.7);
+            transform: scale(1.1);
+        }
+        
+        .lightbox-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1002;
+            transition: all 0.3s ease;
+        }
+        
+        .lightbox-nav:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+        
+        .lightbox-prev {
+            left: 20px;
+        }
+        
+        .lightbox-next {
+            right: 20px;
+        }
+        
+        .image-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px;
+            z-index: 1002;
+            font-weight: bold;
+        }
+        
+        /* Efecto de carga */
+        .lightbox-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            z-index: 1001;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* Media Queries para responsividad */
+        @media (max-width: 1200px) {
+            .gallery-item {
+                width: 280px;
+                height: 190px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .gallery-item {
+                width: 250px;
+                height: 170px;
+                margin: 0 6px;
+            }
+            
+            .gallery-nav {
+                width: 45px;
+                height: 45px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .gallery-item {
+                width: 220px;
+                height: 150px;
+            }
+            
+            .gallery-nav {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .gallery-dots {
+                bottom: 10px;
+            }
+            
+            .lightbox {
+                padding: 15px;
+            }
+            
+            .lightbox-close {
+                top: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 26px;
+            }
+            
+            .lightbox-nav {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .lightbox-prev {
+                left: 15px;
+            }
+            
+            .lightbox-next {
+                right: 15px;
+            }
+            
+            .image-counter {
+                bottom: 15px;
+                font-size: 16px;
+                padding: 10px;
+            }
+            
+            .lightbox-img {
+                max-height: 85vh;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .gallery-item {
+                width: 180px;
+                height: 120px;
+                margin: 0 4px;
+            }
+            
+            .gallery-section {
+                padding: 15px 0;
+            }
+            
+            .gallery-nav {
+                width: 35px;
+                height: 35px;
+                top: 45%;
+            }
+            
+            .nav-prev {
+                left: 8px;
+            }
+            
+            .nav-next {
+                right: 8px;
+            }
+            
+            .dot {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .lightbox {
+                padding: 10px;
+            }
+            
+            .lightbox-close {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 22px;
+            }
+            
+            .lightbox-nav {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .lightbox-prev {
+                left: 10px;
+            }
+            
+            .lightbox-next {
+                right: 10px;
+            }
+            
+            .image-counter {
+                bottom: 10px;
+                font-size: 14px;
+                padding: 8px;
+            }
+            
+            .lightbox-img {
+                max-height: 80vh;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- ITEM 1 -->
+    <div class="item" id="item1">
+        <div class="hero">
+            <img src="imagen/ima1.jpg" alt="Imagen principal ITEM 1" class="hero-image">
+        </div>
+        
+        <section class="gallery-section">
+            <div class="gallery-container" id="galleryContainer1">
+                <div class="gallery-track" id="galleryTrack1">
+                    <!-- 16 imágenes del carrusel ITEM 1 -->
+                    <div class="gallery-item">
+                        <img src="imagen/Im1.jpg" alt="ITEM 1 - Imagen A" class="gallery-img" data-index="0">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im2.jpg" alt="ITEM 1 - Imagen B" class="gallery-img" data-index="1">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im3.jpg" alt="ITEM 1 - Imagen C" class="gallery-img" data-index="2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im4.jpg" alt="ITEM 1 - Imagen D" class="gallery-img" data-index="3">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im5.jpg" alt="ITEM 1 - Imagen E" class="gallery-img" data-index="4">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im6.jpg" alt="ITEM 1 - Imagen F" class="gallery-img" data-index="5">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im7.jpg" alt="ITEM 1 - Imagen G" class="gallery-img" data-index="6">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im8.jpg" alt="ITEM 1 - Imagen H" class="gallery-img" data-index="7">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im9.jpg" alt="ITEM 1 - Imagen I" class="gallery-img" data-index="8">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im10.jpg" alt="ITEM 1 - Imagen J" class="gallery-img" data-index="9">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im11.jpg" alt="ITEM 1 - Imagen K" class="gallery-img" data-index="10">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im12.jpg" alt="ITEM 1 - Imagen L" class="gallery-img" data-index="11">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im13.jpg" alt="ITEM 1 - Imagen M" class="gallery-img" data-index="12">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im14.jpg" alt="ITEM 1 - Imagen N" class="gallery-img" data-index="13">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im15.jpg" alt="ITEM 1 - Imagen O" class="gallery-img" data-index="14">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/im16.jpg" alt="ITEM 1 - Imagen P" class="gallery-img" data-index="15">
+                    </div>
+                    
+                    <!-- Duplicado de las primeras 6 imágenes para efecto infinito -->
+                    <div class="gallery-item">
+                        <img src="imagen/Im1.jpg" alt="ITEM 1 - Imagen A" class="gallery-img" data-index="16">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im2.jpg" alt="ITEM 1 - Imagen B" class="gallery-img" data-index="17">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im3.jpg" alt="ITEM 1 - Imagen C" class="gallery-img" data-index="18">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im4.jpg" alt="ITEM 1 - Imagen D" class="gallery-img" data-index="19">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im5.jpg" alt="ITEM 1 - Imagen E" class="gallery-img" data-index="20">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/Im6.jpg" alt="ITEM 1 - Imagen F" class="gallery-img" data-index="21">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gallery-nav nav-prev" data-gallery="1">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="gallery-nav nav-next" data-gallery="1">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            
+            <div class="gallery-dots" data-gallery="1">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ITEM 2 -->
+    <div class="item" id="item2">
+        <div class="hero">
+            <img src="imagen/Rma1.jpg" alt="Imagen principal ITEM 2" class="hero-image">
+        </div>
+        
+        <section class="gallery-section">
+            <div class="gallery-container" id="galleryContainer2">
+                <div class="gallery-track" id="galleryTrack2">
+                    <!-- 16 imágenes del carrusel ITEM 2 -->
+                    <div class="gallery-item">
+                        <img src="imagen/r1.jpg" alt="ITEM 2 - Imagen A" class="gallery-img" data-index="0">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r2.jpg" alt="ITEM 2 - Imagen B" class="gallery-img" data-index="1">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r3.jpg" alt="ITEM 2 - Imagen C" class="gallery-img" data-index="2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r4.jpg" alt="ITEM 2 - Imagen D" class="gallery-img" data-index="3">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r5.jpg" alt="ITEM 2 - Imagen E" class="gallery-img" data-index="4">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r6.jpg" alt="ITEM 2 - Imagen F" class="gallery-img" data-index="5">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r7.jpg" alt="ITEM 2 - Imagen G" class="gallery-img" data-index="6">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r8.jpg" alt="ITEM 2 - Imagen H" class="gallery-img" data-index="7">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r9.jpg" alt="ITEM 2 - Imagen I" class="gallery-img" data-index="8">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r10.jpg" alt="ITEM 2 - Imagen J" class="gallery-img" data-index="9">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r11.jpg" alt="ITEM 2 - Imagen K" class="gallery-img" data-index="10">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r12.jpg" alt="ITEM 2 - Imagen L" class="gallery-img" data-index="11">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r13.jpg" alt="ITEM 2 - Imagen M" class="gallery-img" data-index="12">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r14.jpg" alt="ITEM 2 - Imagen N" class="gallery-img" data-index="13">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r15.jpg" alt="ITEM 2 - Imagen O" class="gallery-img" data-index="14">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r16.jpg" alt="ITEM 2 - Imagen P" class="gallery-img" data-index="15">
+                    </div>
+                    
+                    <!-- Duplicado de las primeras 6 imágenes para efecto infinito -->
+                    <div class="gallery-item">
+                        <img src="imagen/r1.jpg" alt="ITEM 2 - Imagen A" class="gallery-img" data-index="16">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r2.jpg" alt="ITEM 2 - Imagen B" class="gallery-img" data-index="17">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r3.jpg" alt="ITEM 2 - Imagen C" class="gallery-img" data-index="18">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r4.jpg" alt="ITEM 2 - Imagen D" class="gallery-img" data-index="19">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r5.jpg" alt="ITEM 2 - Imagen E" class="gallery-img" data-index="20">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/r6.jpg" alt="ITEM 2 - Imagen F" class="gallery-img" data-index="21">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gallery-nav nav-prev" data-gallery="2">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="gallery-nav nav-next" data-gallery="2">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            
+            <div class="gallery-dots" data-gallery="2">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ITEM 3 -->
+    <div class="item" id="item3">
+        <div class="hero">
+            <img src="imagen/Pm1.jpg" alt="Imagen principal ITEM 3" class="hero-image">
+        </div>
+        
+        <section class="gallery-section">
+            <div class="gallery-container" id="galleryContainer3">
+                <div class="gallery-track" id="galleryTrack3">
+                    <!-- 16 imágenes del carrusel ITEM 3 -->
+                    <div class="gallery-item">
+                        <img src="imagen/p1.jpg" alt="ITEM 3 - Imagen A" class="gallery-img" data-index="0">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p2.jpg" alt="ITEM 3 - Imagen B" class="gallery-img" data-index="1">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p3.jpg" alt="ITEM 3 - Imagen C" class="gallery-img" data-index="2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p4.jpg" alt="ITEM 3 - Imagen D" class="gallery-img" data-index="3">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p5.jpg" alt="ITEM 3 - Imagen E" class="gallery-img" data-index="4">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p6.jpg" alt="ITEM 3 - Imagen F" class="gallery-img" data-index="5">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p7.jpg" alt="ITEM 3 - Imagen G" class="gallery-img" data-index="6">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p8.jpg" alt="ITEM 3 - Imagen H" class="gallery-img" data-index="7">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p9.jpg" alt="ITEM 3 - Imagen I" class="gallery-img" data-index="8">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p10.jpg" alt="ITEM 3 - Imagen J" class="gallery-img" data-index="9">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p11.jpg" alt="ITEM 3 - Imagen K" class="gallery-img" data-index="10">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p12.jpg" alt="ITEM 3 - Imagen L" class="gallery-img" data-index="11">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p13.jpg" alt="ITEM 3 - Imagen M" class="gallery-img" data-index="12">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p14.jpg" alt="ITEM 3 - Imagen N" class="gallery-img" data-index="13">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p15.jpg" alt="ITEM 3 - Imagen O" class="gallery-img" data-index="14">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p16.jpg" alt="ITEM 3 - Imagen P" class="gallery-img" data-index="15">
+                    </div>
+                    
+                    <!-- Duplicado de las primeras 6 imágenes para efecto infinito -->
+                    <div class="gallery-item">
+                        <img src="imagen/p1.jpg" alt="ITEM 3 - Imagen A" class="gallery-img" data-index="16">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p2.jpg" alt="ITEM 3 - Imagen B" class="gallery-img" data-index="17">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p3.jpg" alt="ITEM 3 - Imagen C" class="gallery-img" data-index="18">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p4.jpg" alt="ITEM 3 - Imagen D" class="gallery-img" data-index="19">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p5.jpg" alt="ITEM 3 - Imagen E" class="gallery-img" data-index="20">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/p6.jpg" alt="ITEM 3 - Imagen F" class="gallery-img" data-index="21">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gallery-nav nav-prev" data-gallery="3">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="gallery-nav nav-next" data-gallery="3">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            
+            <div class="gallery-dots" data-gallery="3">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ITEM 4 -->
+    <div class="item" id="item4">
+        <div class="hero">
+            <img src="imagen/Lma2.jpg" alt="Imagen principal ITEM 4" class="hero-image">
+        </div>
+        
+        <section class="gallery-section">
+            <div class="gallery-container" id="galleryContainer4">
+                <div class="gallery-track" id="galleryTrack4">
+                    <!-- 16 imágenes del carrusel ITEM 4 -->
+                    <div class="gallery-item">
+                        <img src="imagen/l1.jpg" alt="ITEM 4 - Imagen A" class="gallery-img" data-index="0">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l2.jpg" alt="ITEM 4 - Imagen B" class="gallery-img" data-index="1">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l3.jpg" alt="ITEM 4 - Imagen C" class="gallery-img" data-index="2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l4.jpg" alt="ITEM 4 - Imagen D" class="gallery-img" data-index="3">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l5.jpg" alt="ITEM 4 - Imagen E" class="gallery-img" data-index="4">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l6.jpg" alt="ITEM 4 - Imagen F" class="gallery-img" data-index="5">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l7.jpg" alt="ITEM 4 - Imagen G" class="gallery-img" data-index="6">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l8.jpg" alt="ITEM 4 - Imagen H" class="gallery-img" data-index="7">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l9.jpg" alt="ITEM 4 - Imagen I" class="gallery-img" data-index="8">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l10.jpg" alt="ITEM 4 - Imagen J" class="gallery-img" data-index="9">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l11.jpg" alt="ITEM 4 - Imagen K" class="gallery-img" data-index="10">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l12.jpg" alt="ITEM 4 - Imagen L" class="gallery-img" data-index="11">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l13.jpg" alt="ITEM 4 - Imagen M" class="gallery-img" data-index="12">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l14.jpg" alt="ITEM 4 - Imagen N" class="gallery-img" data-index="13">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l15.jpg" alt="ITEM 4 - Imagen O" class="gallery-img" data-index="14">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l16.jpg" alt="ITEM 4 - Imagen P" class="gallery-img" data-index="15">
+                    </div>
+                    
+                    <!-- Duplicado de las primeras 6 imágenes para efecto infinito -->
+                    <div class="gallery-item">
+                        <img src="imagen/l1.jpg" alt="ITEM 4 - Imagen A" class="gallery-img" data-index="16">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l2.jpg" alt="ITEM 4 - Imagen B" class="gallery-img" data-index="17">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l3.jpg" alt="ITEM 4 - Imagen C" class="gallery-img" data-index="18">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l4.jpg" alt="ITEM 4 - Imagen D" class="gallery-img" data-index="19">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l5.jpg" alt="ITEM 4 - Imagen E" class="gallery-img" data-index="20">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/l6.jpg" alt="ITEM 4 - Imagen F" class="gallery-img" data-index="21">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gallery-nav nav-prev" data-gallery="4">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="gallery-nav nav-next" data-gallery="4">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            
+            <div class="gallery-dots" data-gallery="4">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ITEM 5 -->
+    <div class="item" id="item5">
+        <div class="hero">
+            <img src="imagen/Tm1.jpg" alt="Imagen principal ITEM 5" class="hero-image">
+        </div>
+        
+        <section class="gallery-section">
+            <div class="gallery-container" id="galleryContainer5">
+                <div class="gallery-track" id="galleryTrack5">
+                    <!-- 16 imágenes del carrusel ITEM 5 -->
+                    <div class="gallery-item">
+                        <img src="imagen/t1.jpg" alt="ITEM 5 - Imagen A" class="gallery-img" data-index="0">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t2.jpg" alt="ITEM 5 - Imagen B" class="gallery-img" data-index="1">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t3.jpg" alt="ITEM 5 - Imagen C" class="gallery-img" data-index="2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t4.jpg" alt="ITEM 5 - Imagen D" class="gallery-img" data-index="3">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t5.jpg" alt="ITEM 5 - Imagen E" class="gallery-img" data-index="4">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t6.jpg" alt="ITEM 5 - Imagen F" class="gallery-img" data-index="5">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t7.jpg" alt="ITEM 5 - Imagen G" class="gallery-img" data-index="6">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t8.jpg" alt="ITEM 5 - Imagen H" class="gallery-img" data-index="7">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t9.jpg" alt="ITEM 5 - Imagen I" class="gallery-img" data-index="8">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t10.jpg" alt="ITEM 5 - Imagen J" class="gallery-img" data-index="9">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t11.jpg" alt="ITEM 5 - Imagen K" class="gallery-img" data-index="10">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t12.jpg" alt="ITEM 5 - Imagen L" class="gallery-img" data-index="11">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t13.jpg" alt="ITEM 5 - Imagen M" class="gallery-img" data-index="12">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t14.jpg" alt="ITEM 5 - Imagen N" class="gallery-img" data-index="13">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t15.jpg" alt="ITEM 5 - Imagen O" class="gallery-img" data-index="14">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t16.jpg" alt="ITEM 5 - Imagen P" class="gallery-img" data-index="15">
+                    </div>
+                    
+                    <!-- Duplicado de las primeras 6 imágenes para efecto infinito -->
+                    <div class="gallery-item">
+                        <img src="imagen/t1.jpg" alt="ITEM 5 - Imagen A" class="gallery-img" data-index="16">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t2.jpg" alt="ITEM 5 - Imagen B" class="gallery-img" data-index="17">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t3.jpg" alt="ITEM 5 - Imagen C" class="gallery-img" data-index="18">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t4.jpg" alt="ITEM 5 - Imagen D" class="gallery-img" data-index="19">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t5.jpg" alt="ITEM 5 - Imagen E" class="gallery-img" data-index="20">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/t6.jpg" alt="ITEM 5 - Imagen F" class="gallery-img" data-index="21">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gallery-nav nav-prev" data-gallery="5">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="gallery-nav nav-next" data-gallery="5">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            
+            <div class="gallery-dots" data-gallery="5">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ITEM 6 -->
+    <div class="item" id="item6">
+
+        <div class="hero">
+            <img src="imagen/zm1.jpg" alt="Imagen principal ITEM 6" class="hero-image">
+        </div>
+        
+        <section class="gallery-section">
+            <div class="gallery-container" id="galleryContainer6">
+                <div class="gallery-track" id="galleryTrack6">
+                    <!-- 16 imágenes del carrusel ITEM 6 -->
+                    <div class="gallery-item">
+                        <img src="imagen/z1.jpg" alt="ITEM 6 - Imagen A" class="gallery-img" data-index="0">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z2.jpg" alt="ITEM 6 - Imagen B" class="gallery-img" data-index="1">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z3.jpg" alt="ITEM 6 - Imagen C" class="gallery-img" data-index="2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z4.jpg" alt="ITEM 6 - Imagen D" class="gallery-img" data-index="3">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z5.jpg" alt="ITEM 6 - Imagen E" class="gallery-img" data-index="4">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z6.jpg" alt="ITEM 6 - Imagen F" class="gallery-img" data-index="5">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z7.jpg" alt="ITEM 6 - Imagen G" class="gallery-img" data-index="6">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z8.jpg" alt="ITEM 6 - Imagen H" class="gallery-img" data-index="7">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z9.jpg" alt="ITEM 6 - Imagen I" class="gallery-img" data-index="8">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z10.jpg" alt="ITEM 6 - Imagen J" class="gallery-img" data-index="9">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z11.jpg" alt="ITEM 6 - Imagen K" class="gallery-img" data-index="10">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z12.jpg" alt="ITEM 6 - Imagen L" class="gallery-img" data-index="11">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z13.jpg" alt="ITEM 6 - Imagen M" class="gallery-img" data-index="12">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z14.jpg" alt="ITEM 6 - Imagen N" class="gallery-img" data-index="13">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z15.jpg" alt="ITEM 6 - Imagen O" class="gallery-img" data-index="14">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z16.jpg" alt="ITEM 6 - Imagen P" class="gallery-img" data-index="15">
+                    </div>
+                    
+                    <!-- Duplicado de las primeras 6 imágenes para efecto infinito -->
+                    <div class="gallery-item">
+                        <img src="imagen/z1.jpg" alt="ITEM 6 - Imagen A" class="gallery-img" data-index="16">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z2.jpg" alt="ITEM 6 - Imagen B" class="gallery-img" data-index="17">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z3.jpg" alt="ITEM 6 - Imagen C" class="gallery-img" data-index="18">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z4.jpg" alt="ITEM 6 - Imagen D" class="gallery-img" data-index="19">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z5.jpg" alt="ITEM 6 - Imagen E" class="gallery-img" data-index="20">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="imagen/z6.jpg" alt="ITEM 6 - Imagen F" class="gallery-img" data-index="21">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gallery-nav nav-prev" data-gallery="6">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="gallery-nav nav-next" data-gallery="6">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            
+            <div class="gallery-dots" data-gallery="6">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Lightbox único para toda la página -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <div class="lightbox-img-container">
+                <div class="lightbox-loading" id="lightboxLoading"></div>
+                <img src="" alt="" class="lightbox-img" id="lightboxImg">
+            </div>
+            <button class="lightbox-close" id="lightboxClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="image-counter" id="imageCounter"></div>
+        </div>
+        <div class="lightbox-nav lightbox-prev" id="lightboxPrev">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="lightbox-nav lightbox-next" id="lightboxNext">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar cada galería
+            for (let i = 1; i <= 6; i++) {
+                initGallery(i);
+            }
+            
+            // Elementos del lightbox (compartido para todas las galerías)
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const lightboxClose = document.getElementById('lightboxClose');
+            const lightboxPrev = document.getElementById('lightboxPrev');
+            const lightboxNext = document.getElementById('lightboxNext');
+            const imageCounter = document.getElementById('imageCounter');
+            const lightboxLoading = document.getElementById('lightboxLoading');
+            
+            let lightboxIndex = 0;
+            let currentGalleryImages = [];
+            
+            // Función para inicializar cada galería
+            function initGallery(galleryNumber) {
+                const track = document.getElementById(`galleryTrack${galleryNumber}`);
+                const container = document.getElementById(`galleryContainer${galleryNumber}`);
+                const prevBtn = document.querySelector(`.nav-prev[data-gallery="${galleryNumber}"]`);
+                const nextBtn = document.querySelector(`.nav-next[data-gallery="${galleryNumber}"]`);
+                const dots = document.querySelectorAll(`.gallery-dots[data-gallery="${galleryNumber}"] .dot`);
+                const galleryItems = document.querySelectorAll(`#galleryTrack${galleryNumber} .gallery-item`);
+                const galleryImages = document.querySelectorAll(`#galleryTrack${galleryNumber} .gallery-img`);
+                
+                let startX = 0;
+                let scrollLeft = 0;
+                let isDown = false;
+                let currentIndex = 0;
+                let itemWidth = galleryItems[0].offsetWidth + 16;
+                let isAnimating = false;
+                const totalOriginalItems = 16;
+                const totalClones = 6;
+                const totalItems = galleryItems.length;
+                
+                // Calcular el ancho total del track
+                function updateTrackDimensions() {
+                    itemWidth = galleryItems[0].offsetWidth + 16;
+                    const totalWidth = totalItems * itemWidth;
+                    track.style.width = `${totalWidth}px`;
+                }
+                
+                // Navegación con botones
+                prevBtn.addEventListener('click', () => {
+                    if (isAnimating) return;
+                    navigate(-1);
+                });
+                
+                nextBtn.addEventListener('click', () => {
+                    if (isAnimating) return;
+                    navigate(1);
+                });
+                
+                // Navegación con dots
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        if (isAnimating) return;
+                        goToSlide(index);
+                    });
+                });
+                
+                // Función para navegar entre slides
+                function navigate(direction) {
+                    currentIndex += direction;
+                    
+                    // Si estamos en un clon, ajustar al índice correspondiente
+                    if (currentIndex >= totalOriginalItems) {
+                        currentIndex = 0;
+                        goToSlide(currentIndex, true);
+                    } else if (currentIndex < 0) {
+                        currentIndex = totalOriginalItems - 1;
+                        goToSlide(currentIndex, true);
+                    } else {
+                        goToSlide(currentIndex, false);
+                    }
+                }
+                
+                // Ir a un slide específico
+                function goToSlide(index, instant = false) {
+                    isAnimating = true;
+                    
+                    if (instant) {
+                        track.style.transition = 'none';
+                    } else {
+                        track.style.transition = 'transform 0.5s ease';
+                    }
+                    
+                    const newPosition = -index * itemWidth;
+                    track.style.transform = `translateX(${newPosition}px)`;
+                    
+                    // Actualizar dots activos
+                    const dotIndex = index % totalOriginalItems;
+                    dots.forEach((dot, i) => {
+                        dot.classList.toggle('active', i === dotIndex);
+                    });
+                    
+                    // Restaurar transición después de un instante
+                    if (instant) {
+                        setTimeout(() => {
+                            track.style.transition = 'transform 0.5s ease';
+                            isAnimating = false;
+                        }, 50);
+                    } else {
+                        setTimeout(() => {
+                            isAnimating = false;
+                        }, 500);
+                    }
+                }
+                
+                // Eventos para arrastrar con mouse
+                container.addEventListener('mousedown', (e) => {
+                    if (isAnimating) return;
+                    isDown = true;
+                    startX = e.pageX - container.offsetLeft;
+                    scrollLeft = track.scrollLeft;
+                    container.classList.add('grabbing');
+                });
+                
+                container.addEventListener('mouseleave', () => {
+                    if (!isDown) return;
+                    isDown = false;
+                    container.classList.remove('grabbing');
+                    checkPosition();
+                });
+                
+                container.addEventListener('mouseup', () => {
+                    if (!isDown) return;
+                    isDown = false;
+                    container.classList.remove('grabbing');
+                    checkPosition();
+                });
+                
+                container.addEventListener('mousemove', (e) => {
+                    if(!isDown || isAnimating) return;
+                    e.preventDefault();
+                    const x = e.pageX - container.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    track.scrollLeft = scrollLeft - walk;
+                });
+                
+                // Eventos para dispositivos táctiles
+                container.addEventListener('touchstart', (e) => {
+                    if (isAnimating) return;
+                    isDown = true;
+                    startX = e.touches[0].pageX - container.offsetLeft;
+                    scrollLeft = track.scrollLeft;
+                }, { passive: true });
+                
+                container.addEventListener('touchend', () => {
+                    if (!isDown) return;
+                    isDown = false;
+                    checkPosition();
+                });
+                
+                container.addEventListener('touchmove', (e) => {
+                    if(!isDown || isAnimating) return;
+                    const x = e.touches[0].pageX - container.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    track.scrollLeft = scrollLeft - walk;
+                }, { passive: true });
+                
+                // Verificar la posición después de arrastrar
+                function checkPosition() {
+                    const currentScroll = track.scrollLeft;
+                    const maxScroll = track.scrollWidth - container.offsetWidth;
+                    
+                    // Calcular el índice actual basado en el desplazamiento
+                    let newIndex = Math.round(currentScroll / itemWidth);
+                    
+                    // Ajustar si estamos en los clones al final
+                    if (newIndex >= totalOriginalItems) {
+                        newIndex = newIndex % totalOriginalItems;
+                        goToSlide(newIndex, true);
+                    } 
+                    // Ajustar si estamos en los clones al principio
+                    else if (newIndex < 0) {
+                        newIndex = totalOriginalItems + newIndex;
+                        goToSlide(newIndex, true);
+                    } else {
+                        currentIndex = newIndex;
+                        goToSlide(currentIndex, false);
+                    }
+                }
+                
+                // Lightbox functionality para esta galería
+                galleryImages.forEach((img, index) => {
+                    // Solo agregar eventos a las imágenes originales
+                    if (index < totalOriginalItems) {
+                        img.addEventListener('click', () => {
+                            lightboxIndex = index;
+                            // Obtener solo las imágenes originales (no los clones)
+                            currentGalleryImages = Array.from(galleryImages).slice(0, totalOriginalItems);
+                            openLightbox(lightboxIndex);
+                        });
+                    }
+                });
+                
+                // Inicializar
+                updateTrackDimensions();
+                
+                // Actualizar dimensiones cuando cambia el tamaño de la ventana
+                window.addEventListener('resize', updateTrackDimensions);
+            }
+            
+            // Lightbox events
+            lightboxClose.addEventListener('click', closeLightbox);
+            
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+            
+            lightboxPrev.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateLightbox(-1);
+            });
+            
+            lightboxNext.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateLightbox(1);
+            });
+            
+            // Cerrar lightbox con tecla Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                    closeLightbox();
+                }
+                if (lightbox.classList.contains('active')) {
+                    if (e.key === 'ArrowLeft') {
+                        navigateLightbox(-1);
+                    } else if (e.key === 'ArrowRight') {
+                        navigateLightbox(1);
+                    }
+                }
+            });
+            
+            // Gestos táctiles para el lightbox
+            let touchStartX = 0;
+            lightbox.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+            }, { passive: true });
+            
+            lightbox.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diffX = touchStartX - touchEndX;
+                
+                // Si el deslizamiento es significativo, cambiar de imagen
+                if (Math.abs(diffX) > 50) {
+                    if (diffX > 0) {
+                        navigateLightbox(1); // Deslizar izquierda -> siguiente
+                    } else {
+                        navigateLightbox(-1); // Deslizar derecha -> anterior
+                    }
+                }
+            }, { passive: true });
+            
+            function openLightbox(index) {
+                lightboxIndex = index;
+                lightboxLoading.style.display = 'block';
+                lightboxImg.style.opacity = '0';
+                
+                // Precargar la imagen
+                const img = new Image();
+                img.src = currentGalleryImages[index].src;
+                img.alt = currentGalleryImages[index].alt;
+                
+                img.onload = function() {
+                    lightboxImg.src = this.src;
+                    lightboxImg.alt = this.alt;
+                    lightboxImg.style.opacity = '1';
+                    lightboxLoading.style.display = 'none';
+                    
+                    imageCounter.textContent = `${index + 1} / ${currentGalleryImages.length}`;
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Ajustar la imagen para dispositivos móviles
+                    adjustImageForMobile();
+                };
+            }
+            
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+            
+            function navigateLightbox(direction) {
+                lightboxIndex += direction;
+                
+                if (lightboxIndex < 0) {
+                    lightboxIndex = currentGalleryImages.length - 1;
+                } else if (lightboxIndex >= currentGalleryImages.length) {
+                    lightboxIndex = 0;
+                }
+                
+                openLightbox(lightboxIndex);
+            }
+            
+            // Función para ajustar la imagen en dispositivos móviles
+            function adjustImageForMobile() {
+                // Esta función asegura que la imagen se vea correctamente en todos los dispositivos
+                setTimeout(() => {
+                    lightboxImg.style.maxWidth = '100%';
+                    lightboxImg.style.maxHeight = '90vh';
+                    lightboxImg.style.objectFit = 'contain';
+                    
+                    // Para dispositivos móviles en orientación horizontal
+                    if (window.innerHeight < window.innerWidth) {
+                        lightboxImg.style.maxHeight = '85vh';
+                    }
+                }, 50);
+            }
+            
+            // Ajustar el lightbox cuando cambia la orientación del dispositivo
+            window.addEventListener('resize', function() {
+                if (lightbox.classList.contains('active')) {
+                    adjustImageForMobile();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
